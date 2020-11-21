@@ -1,0 +1,32 @@
+name: Python application
+
+on: [pull_request]
+
+jobs:
+  build:
+    env:
+      PIPENV_NO_INHERIT: 1
+      PIPENV_IGNORE_VIRTUALENVS: 1
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        pip install -q pipenv codecov
+        pipenv sync --dev
+    - name: Lint with flake8
+      run: |
+        pipenv run flake8 .
+    - name: Test with pytest
+      run: |
+        pipenv run pytest libpythonpro_ntg --cov=libpythonpro_ntg
+    - name: Posting Coverage
+      env:
+        CODECOV_TOKEN: "13b24f83-0126-487a-8a9b-48679d568512"
+      run: |
+        pipenv run codecov
